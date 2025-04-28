@@ -1,21 +1,22 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation"; // <-- Import useRouter
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"; 
+import { Button } from "@/components/ui/button"; // separate button import
 
 const COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#ff8042", "#00C49F", "#FFBB28", "#FF8042"];
 
 export default function DashboardPage() {
+  const router = useRouter(); // <-- Initialize router
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [editIndex, setEditIndex] = useState(null);
+  const [editIndex, setEditIndex] = useState(null); // For tracking which transaction to edit
   const [modalOpen, setModalOpen] = useState(false);
   const [editedAmount, setEditedAmount] = useState('');
   const [editedDescription, setEditedDescription] = useState('');
-  const [editedDate, setEditedDate] = useState(''); // New state for editing Date
 
   useEffect(() => {
     async function fetchTransactions() {
@@ -37,17 +38,16 @@ export default function DashboardPage() {
 
   const handleDelete = (index) => {
     const updatedTransactions = [...transactions];
-    updatedTransactions.splice(index, 1);
+    updatedTransactions.splice(index, 1); // Remove transaction at the given index
     setTransactions(updatedTransactions);
   };
 
   const handleEdit = (index) => {
     const txn = transactions[index];
     setEditIndex(index);
-    setEditedAmount(txn.amount);
+    setEditedAmount(txn.amount); // Set the current values in the modal
     setEditedDescription(txn.description || '');
-    setEditedDate(txn.date || ''); // set the date also
-    setModalOpen(true);
+    setModalOpen(true); // Open the modal for editing
   };
 
   const saveChanges = () => {
@@ -56,10 +56,9 @@ export default function DashboardPage() {
       ...updatedTransactions[editIndex],
       amount: editedAmount,
       description: editedDescription,
-      date: editedDate, // update the date too
     };
     setTransactions(updatedTransactions);
-    setModalOpen(false);
+    setModalOpen(false); // Close the modal after saving
   };
 
   const monthlyTotals = transactions.reduce((acc, txn) => {
@@ -75,7 +74,7 @@ export default function DashboardPage() {
   }));
 
   const categoryTotals = transactions.reduce((acc, txn) => {
-    const category = txn.description || "Others";
+    const category = txn.description || "Others"; // fallback
     acc[category] = (acc[category] || 0) + parseFloat(txn.amount);
     return acc;
   }, {});
@@ -87,10 +86,20 @@ export default function DashboardPage() {
 
   return (
     <div className="p-8 space-y-8">
-      <h1 className="text-3xl font-bold mb-6">Finance Dashboard</h1>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      {/* Button to go to /budget page */}
+      <div className="flex justify-end mb-6">
+        <button
+          onClick={() => router.push("/budget")}
+          className="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 transition"
+        >
+          Go to Budget Page
+        </button>
+      </div>
 
+      <h1 className="text-3xl font-bold mb-6">Finance Dashboard</h1>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        
         {/* Monthly Expenses Bar Chart */}
         <Card className="bg-white">
           <CardHeader>
@@ -223,16 +232,6 @@ export default function DashboardPage() {
                 id="category"
                 value={editedDescription}
                 onChange={(e) => setEditedDescription(e.target.value)}
-                className="mt-1 w-full px-3 py-2 border rounded-md"
-              />
-            </div>
-            <div>
-              <label htmlFor="date" className="block text-sm font-semibold">Date</label>
-              <input
-                type="date"
-                id="date"
-                value={editedDate ? new Date(editedDate).toISOString().split('T')[0] : ''}
-                onChange={(e) => setEditedDate(e.target.value)}
                 className="mt-1 w-full px-3 py-2 border rounded-md"
               />
             </div>
