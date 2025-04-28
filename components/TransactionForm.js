@@ -103,10 +103,10 @@ export default function TransactionForm({ onAdd = () => {} }) {
       />
 
       {/* Buttons */}
-      <div className="flex flex-col sm:flex-row gap-4">
+      <div className="flex gap-4">
         <button
           type="submit"
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition disabled:opacity-50"
+          className="bg-blue-500 text-white px-4 py-2 rounded"
           disabled={loading}
         >
           {loading ? "Adding..." : "Add Transaction"}
@@ -115,7 +115,7 @@ export default function TransactionForm({ onAdd = () => {} }) {
         <button
           type="button"
           onClick={handleViewTransactions}
-          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded transition"
+          className="bg-green-500 text-white px-6 py-3 rounded shadow-md hover:bg-green-600 transition cursor-pointer"
         >
           View All Transactions
         </button>
@@ -123,3 +123,4 @@ export default function TransactionForm({ onAdd = () => {} }) {
     </form>
   );
 }
+
